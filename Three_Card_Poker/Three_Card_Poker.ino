@@ -5,12 +5,39 @@ LiquidCrystal_I2C lcd(0x27, 16, 2);
 
 String enter = "Enter number: ";  // enter the number of players
 String numberPlayers = "";
-String 
+String namePlayers1 = "";
+String namePlayers2 = "";
+String namePlayers3 = "";
+String namePlayers4 = "";
+String namePlayers5 = "";
+String namePlayers6 = "";
+String namePlayers7 = "";
+String namePlayers8 = "";
+String namePlayers9 = "";
+String namePlayers10 = "";
+String namePlayers11 = "";
+String namePlayers12 = "";
+String namePlayers13 = "";
+String namePlayers14 = "";
+String namePlayers15 = "";
+String namePlayers16 = "";
+String namePlayers17 = "";
 
 bool wasEntered = false;  // the number of players was entered
 bool needRe_entering = false;
 bool wasNumberPlayersEntered = false;
 bool werePlayersNamesEntered = false;
+
+bool containNotOnlyDigits(const String& str) {
+  return false;
+  for (int c = 0; c < str.length(); c++) {
+    char d = str[c];
+    if (!isdigit(d)) {
+      return true;
+    }
+  }
+}
+
 
 void clearLCD1() {
   lcd.setCursor(0, 0);
@@ -23,8 +50,7 @@ void clearLCD2() {
 }
 
 void enterPlayersName() {
-  if (numberPlayers = "2" ) {
-    
+  if (numberPlayers = "2") {
   }
 }
 
@@ -59,18 +85,19 @@ void loop() {
       Serial.println(numberPlayers);
       lcd.setCursor(14, 0);
       lcd.print(numberPlayers.toInt());
-      if (numberPlayers.toInt() < 2 or numberPlayers.toInt() > 17) {
+      if (numberPlayers.toInt() < 2 or numberPlayers.toInt() > 17 or containNotOnlyDigits(numberPlayers)) {
         needRe_entering = true;
         wasNumberPlayersEntered = false;
+        wasEntered = true;
       } else {
         wasNumberPlayersEntered = true;
-        wasEntered = false;
+        wasEntered = false;               // để cuối
+        wasNumberPlayersEntered = false;  //  để cuối
       }
     }
-    if (not werePlayersNamesEntered ) {
+    if (not werePlayersNamesEntered) {
     }
     delay(1000);
     clearLCD1();
   }
 }
-        // wasNumberPlayersEntered = false;
