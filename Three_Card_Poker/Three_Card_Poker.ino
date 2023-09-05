@@ -10,6 +10,7 @@ int countPlayers;
 String numberPlayers = "";
 String player[4][17];
 String card;
+String sumCard[17];
 
 bool containNotOnlyDigits(const String& str) {
   for (int c = 0; c < str.length(); c++) {
@@ -35,6 +36,9 @@ bool containNotOnlyCard(const String cards) {
   return false;
 }
 
+bool containMoreThan4Cards( const String d) {
+  
+}
 
 void checkNumberPlayers() {
   numberPlayers = Serial.readStringUntil('\n');
@@ -92,6 +96,8 @@ void processPlayersCards() {
         while (Serial.available()) {
           Serial.read();
         }
+      }  
+      if ( countCards == 2 ) {
       }
     }
   }
@@ -118,7 +124,25 @@ void checkCard() {
   }
 }
 
+int sum(String a, String b, String c) {
+  if ( a.toInt() > 2 and b.toInt() > 2 and c.toInt() > 2 and a.toInt() < 11 and b.toInt() < 11 and c.toInt() < 11 ) {
+    int result = a.toInt() + b.toInt() + c.toInt();
+    if ( result > 10 and result < 20) {
+      result = result - 10;
+    }
+    if ( result > 20 ) {
+      result = result - 20;
+    }
+    if ( result == 10 or result == 20 or result == 30) {
+      result = 0;
+    }
+    return result;
+  }
+} 
 
+void calculateCards() {
+
+}
 
 void setup() {
   Serial.begin(115200);
@@ -143,3 +167,5 @@ void loop() {
   processPlayersCards();
   lcd.clear();
 }
+
+// vượt qua bốn lá
