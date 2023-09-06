@@ -4,12 +4,12 @@
 LiquidCrystal_I2C lcd(0x27, 16, 2);
 
 
-
+int numPlayers = 17;
 String numberPlayers = "";
 String player[17];
 String card;
 String playerscard[3][17];
-String sumPlayersCards[17];
+int sumPlayersCards[17];
 
 bool containNotOnlyDigits(const String& str) {
   for (int c = 0; c < str.length(); c++) {
@@ -85,18 +85,19 @@ void processPlayersCards() {
   for (int countPlayers = 0; countPlayers < numberPlayers.toInt(); countPlayers++) {
     for (int countCards = 0; countCards < 3; countCards++) {
       lcd.clear();
-      Serial.println("P" + String(countPlayers + 1) + "'s card " + String(countCards + 1) + ": ");
+      Serial.println("Player " + player[countPlayers] + "'s card " + String(countCards + 1) + ": ");
       lcd.setCursor(0, 0);
-      lcd.print("P" + String(countPlayers + 1) + "'s card " + String(countCards + 1) + ":");
+      lcd.print("Player " + player[countPlayers] + "'s card " + String(countCards + 1) + ":");
       while (Serial.available() == 0) {}
       if (Serial.available() > 0) {
         checkCard(countCards, countPlayers);
       }
-      while (Serial.available() ) {
+      while (Serial.available()) {
         Serial.read();
       }
     }
-    Serial.println("sum = " + String(sum(playerscard[0][countPlayers], playerscard[1][countPlayers], playerscard[2][countPlayers])));
+    sumPlayersCards[countPlayers] = sum(playerscard[0][countPlayers], playerscard[1][countPlayers], playerscard[2][countPlayers]);
+    Serial.println("sum = " + String(sumPlayersCards[countPlayers]));
   }
 }
 
@@ -150,14 +151,25 @@ int sum(String a, String b, String c) {
   return result;
 }
 
-void arrangePlayers() {
-  for ( int x = 0; x < numberPlayers.toInt(); x++) {
-    for (int )
+void sortPlayers() {
+  for (int i = 0; i < numPlayers - 1; i++) {
+    for (int j = 0; j < numPlayers - i - 1; j++) {
+      if (sumPlayersCards[j] < sumPlayersCards[j + 1]) {
+
+        int tempScore = sumPlayersCards[j];
+        sumPlayersCards[j] = sumPlayersCards[j + 1];
+        sumPlayersCards[j + 1] = tempScore;
+
+        String tempPlayer = player[j];
+        player[j] = player[j + 1];
+        player[j + 1] = tempPlayer;
+      }
+    }
   }
 }
 
 void setup() {
-  Serial.begin(115200);
+  Serial.begin(19200);
   lcd.init();
   lcd.backlight();
 }
@@ -177,9 +189,7 @@ void loop() {
   }
   processPlayersName();
   processPlayersCards();
+  sortPlayers();
+  Serial.println("winner is " + String(player[0]) + " - " + String(sumPlayersCards[0]));
   lcd.clear();
 }
-
-// vượt qua bốn lá
-// hiển thị kết quả từng người
-// hiển thị ngừoi chiến thắng
