@@ -4,13 +4,12 @@
 LiquidCrystal_I2C lcd(0x27, 16, 2);
 
 
-int countCards;
-int countPlayers;
 
 String numberPlayers = "";
-String player[4][17];
+String player[17];
 String card;
-String sumCard[17];
+String playerscard[3][17];
+String sumPlayersCards[17];
 
 bool containNotOnlyDigits(const String& str) {
   for (int c = 0; c < str.length(); c++) {
@@ -23,10 +22,10 @@ bool containNotOnlyDigits(const String& str) {
 }
 
 bool containNotOnlyCard(const String cards) {
-  if ( cards.length() >= 2) {
-    if ( containNotOnlyDigits(cards) ) {
+  if (cards.length() >= 2) {
+    if (containNotOnlyDigits(cards)) {
       return true;
-    }    
+    }
   }
   if (cards != "J" and cards != "Q" and cards != "K" and cards != "A") {
     if (cards.toInt() < 2 or cards.toInt() > 10) {
@@ -36,8 +35,7 @@ bool containNotOnlyCard(const String cards) {
   return false;
 }
 
-bool containMoreThan4Cards( const String d) {
-  
+bool containMoreThan4Cards(const String d) {
 }
 
 void checkNumberPlayers() {
@@ -70,11 +68,11 @@ void processPlayersName() {
     lcd.print("Player" + String(countNumber + 1) + "'s name: ");
     while (Serial.available() == 0) {}
     if (Serial.available() > 0) {
-      player[0][countNumber] = Serial.readStringUntil('\n');
-      player[0][countNumber].trim();
-      Serial.println(player[0][countNumber]);
+      player[countNumber] = Serial.readStringUntil('\n');
+      player[countNumber].trim();
+      Serial.println(player[countNumber]);
       lcd.setCursor(0, 1);
-      lcd.print(player[0][countNumber]);
+      lcd.print(player[countNumber]);
       delay(1000);
     }
     while (Serial.available() > 0) {
@@ -92,26 +90,24 @@ void processPlayersCards() {
       lcd.print("P" + String(countPlayers + 1) + "'s card " + String(countCards + 1) + ":");
       while (Serial.available() == 0) {}
       if (Serial.available() > 0) {
-        checkCard();
-        while (Serial.available()) {
-          Serial.read();
-        }
-      }  
-      if ( countCards == 2 ) {
+        checkCard(countCards, countPlayers);
+      }
+      while (Serial.available() ) {
+        Serial.read();
       }
     }
+    Serial.println("sum = " + String(sum(playerscard[0][countPlayers], playerscard[1][countPlayers], playerscard[2][countPlayers])));
   }
 }
 
-void checkCard() {
-  player[countCards + 1][countPlayers] = Serial.readStringUntil('\n');
-  player[countCards + 1][countPlayers].trim();
-  Serial.println(player[countCards + 1][countPlayers]);
+void checkCard(int countCards, int countPlayers) {
+  playerscard[countCards][countPlayers] = Serial.readStringUntil('\n');
+  playerscard[countCards][countPlayers].trim();
+  Serial.println(playerscard[countCards][countPlayers]);
   lcd.setCursor(14, 0);
-  lcd.print(player[countCards + 1][countPlayers]);
+  lcd.print(playerscard[countCards][countPlayers]);
   delay(1000);
-  card = player[countCards + 1][countPlayers];
-  if (containNotOnlyCard(card)) {
+  if (containNotOnlyCard(playerscard[countCards][countPlayers])) {
     lcd.clear();
     Serial.println("Re-enter card: ");
     lcd.setCursor(0, 0);
@@ -120,28 +116,44 @@ void checkCard() {
       Serial.read();
     }
     while (Serial.available() == 0) {}
-    checkCard();
+    checkCard(countCards, countPlayers);
   }
 }
 
+
 int sum(String a, String b, String c) {
-  if ( a.toInt() > 2 and b.toInt() > 2 and c.toInt() > 2 and a.toInt() < 11 and b.toInt() < 11 and c.toInt() < 11 ) {
-    int result = a.toInt() + b.toInt() + c.toInt();
-    if ( result > 10 and result < 20) {
-      result = result - 10;
-    }
-    if ( result > 20 ) {
-      result = result - 20;
-    }
-    if ( result == 10 or result == 20 or result == 30) {
-      result = 0;
-    }
-    return result;
+  if (a == "J") { a = "10"; }
+  if (b == "J") { b = "10"; }
+  if (c == "J") { c = "10"; }
+  if (a == "Q") { a = "10"; }
+  if (b == "Q") { b = "10"; }
+  if (c == "Q") { c = "10"; }
+  if (a == "K") { a = "10"; }
+  if (b == "K") { b = "10"; }
+  if (c == "K") { c = "10"; }
+  if (a == "A") { a = "11"; }
+  if (b == "A") { b = "11"; }
+  if (c == "A") { c = "11"; }
+  int result = a.toInt() + b.toInt() + c.toInt();
+  if (result > 10 and result < 20) {
+    result = result - 10;
   }
-} 
+  if (result > 20 and result < 30) {
+    result = result - 20;
+  }
+  if (result > 30) {
+    result = result - 30;
+  }
+  if (result == 10 or result == 20 or result == 30) {
+    result = 0;
+  }
+  return result;
+}
 
-void calculateCards() {
-
+void arrangePlayers() {
+  for ( int x = 0; x < numberPlayers.toInt(); x++) {
+    for (int )
+  }
 }
 
 void setup() {
@@ -169,3 +181,5 @@ void loop() {
 }
 
 // vượt qua bốn lá
+// hiển thị kết quả từng người
+// hiển thị ngừoi chiến thắng
